@@ -83,20 +83,22 @@ function calculateResults() {
     // Calculate total lots opened
     let totalLots = numPositions * lotSize;
 
-    // Calculate the average entry price
-    let totalEntryPrice = 0;
+    // Calculate the total cost (sum of all entry prices)
+    let totalEntryCost = 0;
     for (let i = 0; i < numPositions; i++) {
-        totalEntryPrice += priceStart + i * gridSpacing;
+        totalEntryCost += (priceStart + i * gridSpacing);
     }
-    let averageEntryPrice = totalEntryPrice / numPositions;
+
+    // Calculate the average entry price
+    let averageEntryPrice = totalEntryCost / numPositions;
 
     // Adjust the closing price based on profit target
     let closingPrice;
     if (executionType === "sell") {
-        // For sell, calculate based on the average entry price minus profit
+        // For sell, decrease the price below the average to gain profit
         closingPrice = averageEntryPrice - (profitTarget / (totalLots * 100));
     } else if (executionType === "buy") {
-        // For buy, calculate based on the average entry price plus profit
+        // For buy, increase the price above the average to gain profit
         closingPrice = averageEntryPrice + (profitTarget / (totalLots * 100));
     }
 
