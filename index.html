@@ -98,23 +98,23 @@ function calculateResults() {
         }
     }
 
-    // Calculate the average entry price
-    let averageEntryPrice = totalEntryCost / numPositions;
+    // Calculate the average entry price (breakeven price)
+    let breakevenPrice = totalEntryCost / numPositions;
 
     // Calculate closing price for profit
     let closingPriceForProfit;
     if (executionType === "sell") {
-        closingPriceForProfit = averageEntryPrice - (profitTarget / (totalLots * 100));
+        closingPriceForProfit = breakevenPrice - (profitTarget / (totalLots * 100));
     } else if (executionType === "buy") {
-        closingPriceForProfit = averageEntryPrice + (profitTarget / (totalLots * 100));
+        closingPriceForProfit = breakevenPrice + (profitTarget / (totalLots * 100));
     }
 
     // Calculate closing price for maximum loss
     let closingPriceForLoss;
     if (executionType === "sell") {
-        closingPriceForLoss = averageEntryPrice + (maxLoss / (totalLots * 100));
+        closingPriceForLoss = breakevenPrice + (maxLoss / (totalLots * 100));
     } else if (executionType === "buy") {
-        closingPriceForLoss = averageEntryPrice - (maxLoss / (totalLots * 100));
+        closingPriceForLoss = breakevenPrice - (maxLoss / (totalLots * 100));
     }
 
     // Calculate the total lots opened at the closing price for maximum loss
@@ -140,12 +140,12 @@ function calculateResults() {
 
     // Display results
     document.getElementById('results').innerHTML = 
-        `<strong>Total Lots Opened:</strong> ${totalLots.toFixed(2)}<br>` +
-        `<strong>Average Entry Price:</strong> ${averageEntryPrice.toFixed(2)}<br>` +
-        `<strong>Closing Price for Profit:</strong> ${closingPriceForProfit.toFixed(2)}<br>` +
-        `<strong>Closing Price for Maximum Loss:</strong> ${closingPriceForLoss.toFixed(2)}<br>` +
+        `<strong>Total Lots Opened at ${priceEnd}:</strong> ${totalLots.toFixed(2)}<br>` +
+        `<strong>Breakeven Price:</strong> ${breakevenPrice.toFixed(2)}<br>` +
+        `<strong>Closing Price for Profit of ${profitTarget}:</strong> ${closingPriceForProfit.toFixed(2)}<br>` +
+        `<strong>Closing Price for Maximum Loss of ${maxLoss}:</strong> ${closingPriceForLoss.toFixed(2)}<br>` +
         `<strong>Total Lots at Maximum Loss Closing Price:</strong> ${totalLotsAtMaxLoss.toFixed(2)}<br>` +
-        `<strong>Maximum Drawdown:</strong> ${maxDrawdown.toFixed(2)}`;
+        `<strong>Maximum Drawdown at ${priceEnd}:</strong> ${maxDrawdown.toFixed(2)}`;
 }
 </script>
 
