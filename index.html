@@ -77,8 +77,9 @@ function calculateResults() {
         return;
     }
 
-    // Calculate number of positions
-    let numPositions = Math.floor((priceEnd - priceStart) / gridSpacing) + 1;
+    // Determine if the price range is increasing or decreasing
+    let isIncreasing = priceEnd > priceStart;
+    let numPositions = Math.floor(Math.abs(priceEnd - priceStart) / gridSpacing) + 1;
 
     // Calculate total lots opened
     let totalLots = numPositions * lotSize;
@@ -86,7 +87,11 @@ function calculateResults() {
     // Calculate the total cost (sum of all entry prices)
     let totalEntryCost = 0;
     for (let i = 0; i < numPositions; i++) {
-        totalEntryCost += (priceStart + i * gridSpacing);
+        if (isIncreasing) {
+            totalEntryCost += (priceStart + i * gridSpacing);
+        } else {
+            totalEntryCost += (priceStart - i * gridSpacing);
+        }
     }
 
     // Calculate the average entry price
@@ -105,12 +110,12 @@ function calculateResults() {
     // Calculate maximum drawdown
     let maxDrawdown = 0;
     for (let i = 0; i < numPositions; i++) {
-        let positionPrice = priceStart + i * gridSpacing;
+        let positionPrice = isIncreasing ? (priceStart + i * gridSpacing) : (priceStart - i * gridSpacing);
         let drawdown;
         if (executionType === "sell") {
             drawdown = (priceEnd - positionPrice) * 100 * lotSize;
         } else {
-            drawdown = (positionPrice - priceStart) * 100 * lotSize;
+            drawdown = (positionPrice - priceEnd) * 100 * lotSize;
         }
         maxDrawdown += drawdown;
     }
