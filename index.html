@@ -83,14 +83,21 @@ function calculateResults() {
     // Calculate total lots opened
     let totalLots = numPositions * lotSize;
 
-    // Calculate the closing price based on the execution type
+    // Calculate the average entry price
+    let totalEntryPrice = 0;
+    for (let i = 0; i < numPositions; i++) {
+        totalEntryPrice += priceStart + i * gridSpacing;
+    }
+    let averageEntryPrice = totalEntryPrice / numPositions;
+
+    // Adjust the closing price based on profit target
     let closingPrice;
     if (executionType === "sell") {
-        // Lower closing price for higher profit target
-        closingPrice = priceEnd - (profitTarget / (100 * lotSize * numPositions));
+        // For sell, decrease the price below the average to gain profit
+        closingPrice = averageEntryPrice - (profitTarget / (100 * lotSize * numPositions));
     } else if (executionType === "buy") {
-        // Higher closing price for higher profit target
-        closingPrice = priceStart + (profitTarget / (100 * lotSize * numPositions));
+        // For buy, increase the price above the average to gain profit
+        closingPrice = averageEntryPrice + (profitTarget / (100 * lotSize * numPositions));
     }
 
     // Calculate maximum drawdown
@@ -109,6 +116,7 @@ function calculateResults() {
     // Display results
     document.getElementById('results').innerHTML = 
         `<strong>Total Lots Opened:</strong> ${totalLots.toFixed(2)}<br>` +
+        `<strong>Average Entry Price:</strong> ${averageEntryPrice.toFixed(2)}<br>` +
         `<strong>Closing Price:</strong> ${closingPrice.toFixed(2)}<br>` +
         `<strong>Maximum Drawdown:</strong> ${maxDrawdown.toFixed(2)}`;
 }
