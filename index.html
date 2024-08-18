@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grid Trading Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        input[type=text] {
+            width: 100%;
+            padding: 6px;
+            margin: 4px 0;
+            box-sizing: border-box;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Grid Trading Calculator</h2>
+<form id="tradingForm">
+    <label for="priceStart">Initial Price Range Start:</label>
+    <input type="text" id="priceStart" required>
+
+    <label for="priceEnd">Initial Price Range End:</label>
+    <input type="text" id="priceEnd" required>
+
+    <label for="executionType">Execution Type (buy/sell):</label>
+    <input type="text" id="executionType" required>
+
+    <label for="gridSpacing">Grid Spacing:</label>
+    <input type="text" id="gridSpacing" required>
+
+    <label for="lotSize">Lot Size per Position:</label>
+    <input type="text" id="lotSize" required>
+
+    <label for="profitTarget">Profit Target:</label>
+    <input type="text" id="profitTarget" required>
+
+    <button type="button" onclick="calculateResults()">Calculate</button>
+</form>
+
+<h3>Results:</h3>
+<p id="results"></p>
+
+<script>
+function calculateResults() {
+    // Get input values
+    let priceStart = parseFloat(document.getElementById('priceStart').value);
+    let priceEnd = parseFloat(document.getElementById('priceEnd').value);
+    let executionType = document.getElementById('executionType').value.toLowerCase();
+    let gridSpacing = parseFloat(document.getElementById('gridSpacing').value);
+    let lotSize = parseFloat(document.getElementById('lotSize').value);
+    let profitTarget = parseFloat(document.getElementById('profitTarget').value);
+
+    // Validate inputs
+    if (isNaN(priceStart) || isNaN(priceEnd) || isNaN(gridSpacing) || isNaN(lotSize) || isNaN(profitTarget) || 
+        (executionType !== 'buy' && executionType !== 'sell')) {
+        document.getElementById('results').textContent = "Please enter valid inputs.";
+        return;
+    }
+
+    // Calculate number of positions
+    let numPositions = Math.floor((priceEnd - priceStart) / gridSpacing) + 1;
+
+    // Calculate total lots opened
+    let totalLots = numPositions * lotSize;
+
+    // Calculate the closing price based on the execution type
+    let closingPrice;
+    if (executionType === "sell") {
+        closingPrice = priceStart + (profitTarget / (100 * lotSize * numPositions));
+    } else if (executionType === "buy") {
+        closingPrice = priceEnd - (profitTarget / (100 * lotSize * numPositions));
+    }
+
+    // Calculate maximum drawdown
+    let maxDrawdown = 0;
+    for (let i = 0; i < numPositions; i++) {
+        let positionPrice = priceStart + i * gridSpacing;
+        let drawdown;
+        if (executionType === "sell") {
+            drawdown = (priceEnd - positionPrice) * 100 * lotSize;
+        } else {
+            drawdown = (positionPrice - priceStart) * 100 * lotSize;
+        }
+        maxDrawdown += drawdown;
+    }
+
+    // Display results
+    document.getElementById('results').innerHTML = 
+        `<strong>Total Lots Opened:</strong> ${totalLots.toFixed(2)}<br>` +
+        `<strong>Closing Price:</strong> ${closingPrice.toFixed(2)}<br>` +
+        `<strong>Maximum Drawdown:</strong> ${maxDrawdown.toFixed(2)}`;
+}
+</script>
+
+</body>
+</html>
