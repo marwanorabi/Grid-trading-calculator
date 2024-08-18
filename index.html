@@ -141,11 +141,11 @@ function calculateResults() {
     // Display results
     document.getElementById('results').innerHTML = 
         `<strong>Total Lots Opened at ${priceEnd}:</strong> ${totalLots.toFixed(2)}<br>` +
-        `<strong>Breakeven Price:</strong> ${breakevenPrice.toFixed(2)}<br>` +
-        `<strong>Closing Price for Profit of ${profitTarget}:</strong> ${closingPriceForProfit.toFixed(2)}<br>` +
+        `<strong>Maximum Drawdown at ${priceEnd}:</strong> ${maxDrawdown.toFixed(2)}<br><br>` +
+        `<strong>Breakeven Price:</strong> ${breakevenPrice.toFixed(2)}<br><br>` +
+        `<strong>Closing Price for Profit of ${profitTarget}:</strong> ${closingPriceForProfit.toFixed(2)}<br><br>` +
         `<strong>Closing Price for Maximum Loss of ${maxLoss}:</strong> ${closingPriceForLoss.toFixed(2)}<br>` +
-        `<strong>Total Lots at Maximum Loss Closing Price:</strong> ${totalLotsAtMaxLoss.toFixed(2)}<br>` +
-        `<strong>Maximum Drawdown at ${priceEnd}:</strong> ${maxDrawdown.toFixed(2)}`;
+        `<strong>Total Lots at Maximum Loss Closing Price:</strong> ${totalLotsAtMaxLoss.toFixed(2)}<br>`;
 }
 </script>
 
