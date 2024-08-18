@@ -93,11 +93,11 @@ function calculateResults() {
     // Adjust the closing price based on profit target
     let closingPrice;
     if (executionType === "sell") {
-        // For sell, decrease the price below the average to gain profit
-        closingPrice = averageEntryPrice - (profitTarget / (100 * lotSize * numPositions));
+        // For sell, calculate based on the average entry price minus profit
+        closingPrice = averageEntryPrice - (profitTarget / (totalLots * 100));
     } else if (executionType === "buy") {
-        // For buy, increase the price above the average to gain profit
-        closingPrice = averageEntryPrice + (profitTarget / (100 * lotSize * numPositions));
+        // For buy, calculate based on the average entry price plus profit
+        closingPrice = averageEntryPrice + (profitTarget / (totalLots * 100));
     }
 
     // Calculate maximum drawdown
