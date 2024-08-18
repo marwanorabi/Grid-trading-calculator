@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grid Trading Calculator</title>
+    <title>Mohammad Najem Grid Trading Calculator</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
         }
-        input[type=text] {
+        input[type=text], select {
             width: 100%;
             padding: 6px;
             margin: 4px 0;
@@ -34,7 +34,7 @@
 </head>
 <body>
 
-<h2>Grid Trading Calculator</h2>
+<h2>Mohammad Najem Grid Trading Calculator</h2>
 <form id="tradingForm">
     <label for="priceStart">Initial Price Range Start:</label>
     <input type="text" id="priceStart" required>
@@ -42,8 +42,11 @@
     <label for="priceEnd">Initial Price Range End:</label>
     <input type="text" id="priceEnd" required>
 
-    <label for="executionType">Execution Type (buy/sell):</label>
-    <input type="text" id="executionType" required>
+    <label for="executionType">Execution Type:</label>
+    <select id="executionType" required>
+        <option value="buy">Buy</option>
+        <option value="sell">Sell</option>
+    </select>
 
     <label for="gridSpacing">Grid Spacing:</label>
     <input type="text" id="gridSpacing" required>
@@ -75,8 +78,7 @@ function calculateResults() {
     let maxLoss = parseFloat(document.getElementById('maxLoss').value);
 
     // Validate inputs
-    if (isNaN(priceStart) || isNaN(priceEnd) || isNaN(gridSpacing) || isNaN(lotSize) || isNaN(profitTarget) || isNaN(maxLoss) || 
-        (executionType !== 'buy' && executionType !== 'sell')) {
+    if (isNaN(priceStart) || isNaN(priceEnd) || isNaN(gridSpacing) || isNaN(lotSize) || isNaN(profitTarget) || isNaN(maxLoss)) {
         document.getElementById('results').textContent = "Please enter valid inputs.";
         return;
     }
