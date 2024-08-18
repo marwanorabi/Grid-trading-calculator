@@ -86,9 +86,11 @@ function calculateResults() {
     // Calculate the closing price based on the execution type
     let closingPrice;
     if (executionType === "sell") {
-        closingPrice = priceStart + (profitTarget / (100 * lotSize * numPositions));
-    } else if (executionType === "buy") {
+        // Lower closing price for higher profit target
         closingPrice = priceEnd - (profitTarget / (100 * lotSize * numPositions));
+    } else if (executionType === "buy") {
+        // Higher closing price for higher profit target
+        closingPrice = priceStart + (profitTarget / (100 * lotSize * numPositions));
     }
 
     // Calculate maximum drawdown
