@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mohammad Najem ETH/USD Trading Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        input[type=text], select {
+            width: 100%;
+            padding: 6px;
+            margin: 4px 0;
+            box-sizing: border-box;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Mohammad Najem ETH/USD Trading Calculator</h2>
+<form id="tradingForm">
+    <label for="priceStart">Initial Price Range Start:</label>
+    <input type="text" id="priceStart" required>
+
+    <label for="priceEnd">Initial Price Range End:</label>
+    <input type="text" id="priceEnd" required>
+
+    <label for="executionType">Execution Type:</label>
+    <select id="executionType" required>
+        <option value="buy">Buy</option>
+        <option value="sell">Sell</option>
+    </select>
+
+    <label for="gridSpacing">Grid Spacing:</label>
+    <input type="text" id="gridSpacing" required>
+
+    <label for="lotSize">Lot Size (in ETH):</label>
+    <input type="text" id="lotSize" required>
+
+    <label for="profitTarget">Profit Target:</label>
+    <input type="text" id="profitTarget" required>
+
+    <label for="maxLoss">Maximum Loss:</label>
+    <input type="text" id="maxLoss" required>
+
+    <button type="button" onclick="calculateResults()">Calculate</button>
+</form>
+
+<h3>Results:</h3>
+<p id="results"></p>
+
+<script>
+function calculateResults() {
+    // Get input values
+    let priceStart = parseFloat(document.getElementById('priceStart').value);
+    let priceEnd = parseFloat(document.getElementById('priceEnd').value);
+    let executionType = document.getElementById('executionType').value.toLowerCase();
+    let gridSpacing = parseFloat(document.getElementById('gridSpacing').value);
+    let lotSize = parseFloat(document.getElementById('lotSize').value);
+    let profitTarget = parseFloat(document.getElementById('profitTarget').value);
+    let maxLoss = parseFloat(document.getElementById('maxLoss').value);
+
+    // Validate inputs
+    if (isNaN(priceStart) || isNaN(priceEnd) || isNaN(gridSpacing) || isNaN(lotSize) || isNaN(profitTarget) || isNaN(maxLoss)) {
+        document.getElementById('results').textContent = "Please enter valid inputs.";
+        return;
+    }
+
+    // Determine if the price range is increasing or decreasing
+    let isIncreasing = priceEnd > priceStart;
+    let numPositions = Math.floor(Math.abs(priceEnd - priceStart) / gridSpacing) + 1;
+
+    // Calculate total lots opened
+    let totalLots = numPositions * lotSize;
+
+    // Calculate the total cost (sum of all entry prices)
+    let totalEntryCost = 0;
+    for (let i = 0; i < numPositions; i++) {
+        if (isIncreasing) {
+            totalEntryCost += (priceStart + i * gridSpacing);
+        } else {
+            totalEntryCost += (priceStart - i * gridSpacing);
+        }
+    }
+
+    // Calculate the average entry price (breakeven price)
+    let breakevenPrice = totalEntryCost / numPositions;
+
+    // Calculate closing price for profit
+    let closingPriceForProfit;
+    if (executionType === "sell") {
+        closingPriceForProfit = breakevenPrice - (profitTarget / totalLots);
+    } else if (executionType === "buy") {
+        closingPriceForProfit = breakevenPrice + (profitTarget / totalLots);
+    }
+
+    // Calculate closing price for maximum loss
+    let closingPriceForLoss;
+    if (executionType === "sell") {
+        closingPriceForLoss = breakevenPrice + (maxLoss / totalLots);
+    } else if (executionType === "buy") {
+        closingPriceForLoss = breakevenPrice - (maxLoss / totalLots);
+    }
+
+    // Calculate the total lots opened at the closing price for maximum loss
+    let totalLotsAtMaxLoss = 0;
+    if (executionType === "sell") {
+        totalLotsAtMaxLoss = Math.floor(Math.abs(closingPriceForLoss - priceStart) / gridSpacing) * lotSize;
+    } else if (executionType === "buy") {
+        totalLotsAtMaxLoss = Math.floor(Math.abs(priceStart - closingPriceForLoss) / gridSpacing) * lotSize;
+    }
+
+    // Calculate maximum drawdown
+    let maxDrawdown = 0;
+    for (let i = 0; i < numPositions; i++) {
+        let positionPrice = isIncreasing ? (priceStart + i * gridSpacing) : (priceStart - i * gridSpacing);
+        let drawdown;
+        if (executionType === "sell") {
+            drawdown = (priceEnd - positionPrice) * lotSize;
+        } else {
+            drawdown = (positionPrice - priceEnd) * lotSize;
+        }
+        maxDrawdown += drawdown;
+    }
+
+    // Display results
+    document.getElementById('results').innerHTML = 
+        `<strong>Total Lots Opened at ${priceEnd}:</strong> ${totalLots.toFixed(2)} ETH<br>` +
+        `<strong>Maximum Drawdown at ${priceEnd}:</strong> ${maxDrawdown.toFixed(2)} USD<br><br>` +
+        `<strong>Breakeven Price:</strong> ${breakevenPrice.toFixed(2)} USD<br><br>` +
+        `<strong>Closing Price for Profit of ${profitTarget} USD:</strong> ${closingPriceForProfit.toFixed(2)} USD<br><br>` +
+        `<strong>Closing Price for Maximum Loss of ${maxLoss} USD:</strong> ${closingPriceForLoss.toFixed(2)} USD<br>` +
+        `<strong>Total Lots at Maximum Loss Closing Price:</strong> ${totalLotsAtMaxLoss.toFixed(2)} ETH<br>`;
+}
+</script>
+
+</body>
+</html>
