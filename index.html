@@ -54,6 +54,9 @@
     <label for="profitTarget">Profit Target:</label>
     <input type="text" id="profitTarget" required>
 
+    <label for="maxLoss">Maximum Loss:</label>
+    <input type="text" id="maxLoss" required>
+
     <button type="button" onclick="calculateResults()">Calculate</button>
 </form>
 
@@ -69,9 +72,10 @@ function calculateResults() {
     let gridSpacing = parseFloat(document.getElementById('gridSpacing').value);
     let lotSize = parseFloat(document.getElementById('lotSize').value);
     let profitTarget = parseFloat(document.getElementById('profitTarget').value);
+    let maxLoss = parseFloat(document.getElementById('maxLoss').value);
 
     // Validate inputs
-    if (isNaN(priceStart) || isNaN(priceEnd) || isNaN(gridSpacing) || isNaN(lotSize) || isNaN(profitTarget) || 
+    if (isNaN(priceStart) || isNaN(priceEnd) || isNaN(gridSpacing) || isNaN(lotSize) || isNaN(profitTarget) || isNaN(maxLoss) || 
         (executionType !== 'buy' && executionType !== 'sell')) {
         document.getElementById('results').textContent = "Please enter valid inputs.";
         return;
@@ -97,14 +101,20 @@ function calculateResults() {
     // Calculate the average entry price
     let averageEntryPrice = totalEntryCost / numPositions;
 
-    // Adjust the closing price based on profit target
-    let closingPrice;
+    // Calculate closing price for profit
+    let closingPriceForProfit;
     if (executionType === "sell") {
-        // For sell, decrease the price below the average to gain profit
-        closingPrice = averageEntryPrice - (profitTarget / (totalLots * 100));
+        closingPriceForProfit = averageEntryPrice - (profitTarget / (totalLots * 100));
     } else if (executionType === "buy") {
-        // For buy, increase the price above the average to gain profit
-        closingPrice = averageEntryPrice + (profitTarget / (totalLots * 100));
+        closingPriceForProfit = averageEntryPrice + (profitTarget / (totalLots * 100));
+    }
+
+    // Calculate closing price for maximum loss
+    let closingPriceForLoss;
+    if (executionType === "sell") {
+        closingPriceForLoss = averageEntryPrice + (maxLoss / (totalLots * 100));
+    } else if (executionType === "buy") {
+        closingPriceForLoss = averageEntryPrice - (maxLoss / (totalLots * 100));
     }
 
     // Calculate maximum drawdown
@@ -124,7 +134,8 @@ function calculateResults() {
     document.getElementById('results').innerHTML = 
         `<strong>Total Lots Opened:</strong> ${totalLots.toFixed(2)}<br>` +
         `<strong>Average Entry Price:</strong> ${averageEntryPrice.toFixed(2)}<br>` +
-        `<strong>Closing Price:</strong> ${closingPrice.toFixed(2)}<br>` +
+        `<strong>Closing Price for Profit:</strong> ${closingPriceForProfit.toFixed(2)}<br>` +
+        `<strong>Closing Price for Maximum Loss:</strong> ${closingPriceForLoss.toFixed(2)}<br>` +
         `<strong>Maximum Drawdown:</strong> ${maxDrawdown.toFixed(2)}`;
 }
 </script>
